@@ -10,4 +10,4 @@ jobs:
       - name: Test
         env:
           HELLO: 'Hello, world'
-        run: echo '$HELLO'
+        run: echo $HELLO
