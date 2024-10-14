@@ -1,0 +1,21 @@
+name: Deploy Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      job-to-fail:
+        description: The job that should fail for testing purposes.
+        type: string
+        required: false
+        default: 'none'
+
+jobs:
+  deploy-artifacts:
+    name: Deploy Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Artifacts
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'test' }}
+        run: exit 1

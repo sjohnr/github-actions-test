@@ -1,0 +1,24 @@
+name: Perform Release
+
+on: workflow_call
+
+jobs:
+  perform-release:
+    name: Perform Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform Release
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'perform-release' }}
+        run: exit 1
+  next-development-version:
+    name: Next Development Version
+    runs-on: ubuntu-latest
+    needs: [ perform-release ]
+    steps:
+      - name: Perform Release
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'next-development-version' }}
+        run: exit 1

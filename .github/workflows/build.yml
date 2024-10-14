@@ -1,13 +1,99 @@
 name: Build
 
-on: push
+on:
+#  push:
+#    branches-ignore:
+#      - 'dependabot/**'
+#  schedule:
+#    - cron: '0 10 * * *' # Once per day at 10am UTC
+  workflow_dispatch: # Manual trigger
+    inputs:
+      job-to-fail:
+        description: The job that should fail for testing purposes.
+        type: string
+        required: false
+        default: 'none'
+
+permissions:
+  contents: read
 
 jobs:
   build:
     name: Build
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Build
+        run: sleep 10 && echo 'Hello, world (${{ matrix.os }})'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'build' }}
+        run: exit 1
+  test:
+    name: Test
+    uses: ./.github/workflows/test.yml
+    strategy:
+      matrix:
+        jdk: [ '17', '21' ]
+    with:
+      job-to-fail: ${{ inputs.job-to-fail }}
+      java-version: ${{ matrix.jdk }}
+  check-samples:
+    name: Check Samples
     runs-on: ubuntu-latest
     steps:
-      - name: Test
-        env:
-          HELLO: 'Hello, world'
-        run: echo '${HELLO}'
+      - name: Check Samples
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'check-samples' }}
+        run: exit 1
+  check-tangles:
+    name: Check Tangles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Tangles
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'check-tangles' }}
+        run: exit 1
+  deploy-artifacts:
+    name: Deploy Artifacts
+    uses: ./.github/workflows/deploy-artifacts.yml
+    needs: [ build, test, check-samples, check-tangles ]
+    with:
+      job-to-fail: ${{ inputs.job-to-fail }}
+  deploy-docs:
+    name: Deploy Docs
+    runs-on: ubuntu-latest
+    needs: [ build, test, check-samples, check-tangles ]
+    steps:
+      - name: Deploy Docs
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'deploy-docs' }}
+        run: exit 1
+  deploy-schema:
+    name: Deploy Schema
+    runs-on: ubuntu-latest
+    needs: [ build, test, check-samples, check-tangles ]
+    steps:
+      - name: Deploy Schema
+        run: sleep 10 && echo 'Hello, world'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'deploy-schema' }}
+        run: exit 1
+  perform-release:
+    name: Perform Release
+    uses: ./.github/workflows/perform-release.yml
+    needs: [ deploy-artifacts, deploy-docs, deploy-schema ]
+  send-notification:
+    name: Send Notification
+    needs: [ perform-release ]
+    if: ${{ failure() || cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Notification
+        uses: spring-io/spring-security-release-tools/.github/actions/send-notification@v1
+        with:
+          webhook-url: ${{ secrets.SPRING_SECURITY_CI_GCHAT_WEBHOOK_URL }}

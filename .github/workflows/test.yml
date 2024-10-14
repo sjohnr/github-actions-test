@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      job-to-fail:
+        description: The job that should fail for testing purposes.
+        type: string
+        required: false
+        default: 'none'
+      java-version:
+        description: The java version.
+        type: string
+        required: true
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: sleep 10 && echo 'Hello, world (${{ inputs.java-version }})'
+      - name: Fail
+        if: ${{ inputs.job-to-fail == 'test' || inputs.job-to-fail == inputs.java-version }}
+        run: exit 1
