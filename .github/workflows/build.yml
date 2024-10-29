@@ -87,6 +87,7 @@ jobs:
     name: Perform Release
     uses: ./.github/workflows/perform-release.yml
     needs: [ deploy-artifacts, deploy-docs, deploy-schema ]
+    secrets: inherit
   send-notification:
     name: Send Notification
     needs: [ perform-release ]
