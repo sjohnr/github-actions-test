@@ -1,0 +1,9 @@
+changelog:
+  repository: sjohnr/github-actions-test
+  sections:
+    - title: ":star: New Features"
+      labels: ["enhancement"]
+      sort: "title"
+    - title: ":beetle: Bug Fixes"
+      labels: ["bug"]
+      sort: "title"

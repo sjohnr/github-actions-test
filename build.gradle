@@ -1,0 +1,14 @@
+plugins {
+	id("io.spring.security.release") version "1.0.3"
+}
+
+springRelease {
+	repositoryOwner = "sjohnr"
+	repositoryName = "github-actions-test"
+	weekOfMonth = 3
+	dayOfWeek = 1
+	referenceDocUrl = "https://docs.spring.io/spring-security/reference/{version}/index.html"
+	apiDocUrl = "https://docs.spring.io/spring-security/docs/{version}/api/"
+	replaceVersionInReferenceDocUrl = true
+	releaseVersionPrefix = ""
+}
