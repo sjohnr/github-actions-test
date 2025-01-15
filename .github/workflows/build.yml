@@ -90,7 +90,7 @@ jobs:
     secrets: inherit
   send-notification:
     name: Send Notification
-    needs: [ build, test, check-samples, check-tangles, deploy-artifacts, deploy-docs, deploy-schema, perform-release ]
+    needs: [ deploy-artifacts, deploy-docs, deploy-schema, perform-release ]
     if: ${{ !success() }}
     runs-on: ubuntu-latest
     steps:
